@@ -1,0 +1,26 @@
+<!-- src/views/home.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Home</title>
+        <link rel="stylesheet" href="/styles.css">
+    </head>
+    <body>
+        <div class="welcome">
+            <h4>
+                Hello there, welcome.
+            </h4>
+            <p> here is locals object: <%=JSON.stringify(locals)%></p>
+
+            <%if(locals.username){%>
+            <p>You are logged in as <%=locals['username']%></p>
+            <a href="/logout">Logout</a>
+
+            <%}if(locals.notLoggedIn) { %>
+            <p style='font-weight: bold'> You are not yet logged in.</p>
+            <a href="/login">Login</a>
+            <% } %>
+        </div>
+    </body>
+</html>

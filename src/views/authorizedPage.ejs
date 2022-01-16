@@ -1,0 +1,18 @@
+<!-- src/views/home.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Authorized Special Page</title>
+        <!-- <link rel="stylesheet" href="/styles.css"> -->
+    </head>
+    <body>
+
+        <h1> this is an authorized page for logged in users only!</h1>
+        <br>
+        <h3> welcome user: <%=locals.username%>, you're logged in!</h3>
+        <br>
+        <a href="/logout">Logout</a>
+
+    </body>
+</html>
