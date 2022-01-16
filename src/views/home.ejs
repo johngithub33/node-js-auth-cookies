@@ -9,7 +9,7 @@
     <body>
         <div class="welcome">
             <h4>
-                Hello there, welcome.
+                Hello there, welcome to the app.
             </h4>
             <p> here is locals object: <%=JSON.stringify(locals)%></p>
 
@@ -18,7 +18,7 @@
             <a href="/logout">Logout</a>
 
             <%}if(locals.notLoggedIn) { %>
-            <p style='font-weight: bold'> You are not yet logged in.</p>
+            <p style='font-weight: bold'> You are NOT logged in yet.</p>
             <a href="/login">Login</a>
             <% } %>
         </div>

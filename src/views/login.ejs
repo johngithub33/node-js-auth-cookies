@@ -8,14 +8,9 @@
     </head>
     <body>
         <div class="form">
-            <form action="/process_login" method="post">
+            <!-- autocomplete off will stop the drop downs on the input fields -->
+            <form action="/process_login" method="post" autocomplete="off">  
                 <h2>Login</h2>
-                
-                <!-- this gets inserted if there's an error -->
-                <% if(locals.error) {%>
-                    <p class="text-danger"><%=error%></p>
-                <%}%>       
-
                 <div class="input-field">
                     <input type="text" name="username" id="username" placeholder="Enter Username">
                 </div>
@@ -24,6 +19,11 @@
                 </div>
                 <input type="submit" value="LogIn">
             </form>
+
+            <!-- this gets inserted if there's an error -->
+            <% if(locals.error) {%>
+                <p class="text-danger"><%=error%></p>
+            <%}%>  
         </div>
     </body>
 </html>

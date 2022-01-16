@@ -32,34 +32,26 @@ app.set("views", path.join(__dirname, "views"));
 var globalBadAuth = true;  //not logged in by default
 var failedLogin = false;
 
+var loggedIn = false;
+
 //test data
 //put users, userid, pdwd, and shopping cart data in database later
 let userdetails = { username: "bob", password: "123" };
 
 
-app.use('/', (req,res,next) => {
-  console.log('first function');
-  next();
-})
+
 
 //logic in ejs file if not logged in
 app.get("/", (req, res) => {  
-  
-  console.log(req.sessionID);
-  // console.log(locals);
 
-
-  if(req.cookies.usernameLoggedIn)
+  if(loggedIn)
   {
     let username = req.cookies.usernameLoggedIn;  
-    
-    //home view file has logic if username is null
     res.render("home.ejs", {username})  
   }
   
   else
   {
-    let notLoggedIn = true;
     res.render("notLoggedIn.ejs") 
   }
 
@@ -67,28 +59,29 @@ app.get("/", (req, res) => {
 });
 
 app.use('/login',(req,res,next) => {
-  console.log('LOGIN MIDDLEAWARE ONLY!!! function!')
+  console.log('test for LOGIN MIDDLEAWARE ONLY!!! function!')
   next();
 })
 
 app.get("/login", (req, res) => {
   
-  //beginning state:
-  // var globalBadAuth = true;
-  // var failedLogin = false;
-  //so, if failedLogin occurs, it is then set to true and this will render going forward
-  //if a real login occurs, globalBadAuth will be false
-  
-  
-
-  if(globalBadAuth && failedLogin)
-  {
-      res.render("login", { error: "Invalid username or password silly goose" });
-  } 
-  else if(failedLogin == true){
-    res.render('login', { error: "already logged in!" })
+  if(loggedIn){
+    res.render('login');
+    // res.render('welcome') //no need to login, go to welcome
   }
-  else res.render('login')
+  
+  //failed login once before
+  //re-render with message
+  if(!loggedIn && failedLogin){
+    res.render('login', { error: "Username or Password Incorrect." })
+    
+  }
+
+  //login with no message
+  if(!loggedIn && !failedLogin){
+    res.render('login')
+  }
+
 
 });
 
@@ -100,39 +93,60 @@ app.post("/process_login", (req, res) => {
         // user and pdwd match then login
         if (req.body.username === userdetails["username"] && req.body.password === userdetails["password"]
         ) {
-              // saving the data to the cookies
-              res.cookie("usernameLoggedIn", req.body.username);
-              globalBadAuth = false;
+              loggedIn = true;
+              req.session.username = req.body.username;
+
               res.redirect("/welcome");
           } 
         
-        // RE-RENDER login with a message on the query string
+        //for failed login
         else {
           failedLogin = true;
           res.redirect('/login')
         }
 });
 
+//*******************************************************************************************************
+//can protect all routes after here
+function checkLoggedIn(req,res,next){
+  
+  if(!loggedIn){
+    res.render("notLoggedIn.ejs") 
+  }
+
+  else{
+    console.log('first function');
+    next();
+  }
+
+}
+
 //only if logged in
 //logic in welcome.ejs if not logged in
-app.get("/welcome", (req, res) => {
-  let username = req.cookies.usernameLoggedIn;
-  return res.render("welcome", {username});
+app.get("/welcome", checkLoggedIn, (req, res) => {
+
+  if(loggedIn){
+    let username = req.session.username;
+    return res.render("welcome", {username});
+  } 
+
+
 });
 
 
-app.get('/authorizedPage', (req,res) => {
-  let username = req.cookies.usernameLoggedIn;
+app.get('/authorizedPage',checkLoggedIn, (req,res) => {
 
-  if(username) res.render('authorizedPage.ejs', {username})
+  let username = req.session.username;
+  if(loggedIn) res.render('authorizedPage.ejs', {username})
   else res.render('login')
+
 })
 
 app.get("/logout", (req, res) => {
 
-  res.clearCookie("usernameLoggedIn");
-  globalBadAuth = true;
-  failedLogin = false;
+  res.clearCookie("connect.sid");
+  loggedIn = false;
+
   return res.redirect("/login");
   
 });
