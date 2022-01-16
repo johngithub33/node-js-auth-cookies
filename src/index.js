@@ -7,17 +7,30 @@ const cookieparser = require("cookie-parser");
 const session = require('express-session');
 const app = express();
 
+
 app.use(session({
+
     secret:'randomstring23234243asldkfjsdfssldkj',
-    resave: true, //default is true, resaves to session store even if not modified
+    resave: false, //default is true, resaves to session store even if not modified
     httpOnly: false,
-    saveUninitialized: true,
+    
+    //saveUninitlailized *****
+    //this will send cookie or not based on login!
+    //Choosing false is useful for implementing login sessions, reducing server storage usage, or 
+    //complying with laws that require permission before setting a cookie. Choosing false will also 
+    //help with race conditions where a client makes multiple parallel requests without a session.
+    saveUninitialized: false, 
+    rolling: false,
     cookie: {
-      secure: false, //send back cookie if HTTPS connection or not
-      signed: false}
+      secure: false, //send back cookie if HTTPS connection or not, fine for false in test env
+      signed: false,
+      maxAge: 1000 * 60 * 60 * 24 //24 hours
+    }
   }))
 
-// allow the app to use express
+
+
+
 
 app.use(cookieparser());
 app.use(express.json());
@@ -99,6 +112,7 @@ app.post("/process_login", (req, res) => {
         // user and pdwd match then login
         if (req.body.username === userdetails["username"] && req.body.password === userdetails["password"]
         ) {
+
               req.session.loggedIn = true;
               req.session.username = req.body.username;
 
